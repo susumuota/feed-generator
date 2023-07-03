@@ -4,6 +4,28 @@ import {
 } from './lexicon/types/com/atproto/sync/subscribeRepos'
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
 
+const KEYWORDS = [
+  'LLM',
+  'GPT',
+  'NLP',
+  'machine learning',
+  'deep learning',
+  'neural network',
+  'natural language processing',
+  'transformer model',
+  'language model',
+  'generative ai',
+  ' llama ',  // to avoid noise
+  'huggingface',
+  'pytorch',
+  'qlora',
+]
+
+const isLLM = (text: string) => {
+  const lowerText = text.toLowerCase()
+  return KEYWORDS.some((tag) => (tag.toLowerCase() === tag ? lowerText : text).includes(tag))
+}
+
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
     if (!isCommit(evt)) return
@@ -12,18 +34,18 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     // This logs the text of every post off the firehose.
     // Just for fun :)
     // Delete before actually using
-    for (const post of ops.posts.creates) {
-      console.log(post.record.text)
-    }
+    // for (const post of ops.posts.creates) {
+    //   console.log(post.record.text)
+    // }
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = ops.posts.creates
       .filter((create) => {
-        // only alf-related posts
-        return create.record.text.toLowerCase().includes('alf')
+        // only LLM-related posts
+        return isLLM(create.record.text)
       })
       .map((create) => {
-        // map alf-related posts to a db row
+        // map LLM-related posts to a db row
         return {
           uri: create.uri,
           cid: create.cid,
