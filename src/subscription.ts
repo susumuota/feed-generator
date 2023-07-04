@@ -22,7 +22,7 @@ const INCLUDES = [
 ]
 
 const EXCLUDES = [
-  'Summary by GPT3',
+  'Summary by GPT',
 ]
 
 const isLLM = (text: string) => {
