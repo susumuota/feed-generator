@@ -4,7 +4,7 @@ import {
 } from './lexicon/types/com/atproto/sync/subscribeRepos'
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
 
-const KEYWORDS = [
+const INCLUDES = [
   'LLM',
   'GPT',
   'NLP',
@@ -21,9 +21,18 @@ const KEYWORDS = [
   'qlora',
 ]
 
+const EXCLUDES = [
+  'Summary by GPT3',
+]
+
 const isLLM = (text: string) => {
   const lowerText = text.toLowerCase()
-  return KEYWORDS.some((tag) => (tag.toLowerCase() === tag ? lowerText : text).includes(tag))
+  const isExclude = EXCLUDES.some((tag) => (tag.toLowerCase() === tag ? lowerText : text).includes(tag))
+  if (isExclude) return false
+  const isInclude = INCLUDES.some((tag) => (tag.toLowerCase() === tag ? lowerText : text).includes(tag))
+  if (!isInclude) return false
+  // TODO: ask GPT-3 if this is a post about LLM research
+  return true
 }
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
@@ -42,7 +51,12 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     const postsToCreate = ops.posts.creates
       .filter((create) => {
         // only LLM-related posts
-        return isLLM(create.record.text)
+        if (isLLM(create.record.text)) {
+          console.log(create)
+          return true
+        } else {
+          return false
+        }
       })
       .map((create) => {
         // map LLM-related posts to a db row
