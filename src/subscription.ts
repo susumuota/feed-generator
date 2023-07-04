@@ -8,17 +8,17 @@ const INCLUDES = [
   'LLM',
   'GPT',
   'NLP',
-  'machine learning',
-  'deep learning',
-  'neural network',
+  'LLaMA',
   'natural language processing',
   'transformer model',
   'language model',
   'generative ai',
-  ' llama ',  // to avoid noise
   'huggingface',
   'pytorch',
   'qlora',
+  'llama.cpp',
+  'ggml',
+  'gpt4all',
 ]
 
 const EXCLUDES = [
