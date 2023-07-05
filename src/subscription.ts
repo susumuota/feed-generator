@@ -6,19 +6,32 @@ import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
 
 const INCLUDES = [
   'LLM',
-  'GPT',
+  // 'GPT',  // too noisy, e.g. "ChatGPT"
   'NLP',
   'LLaMA',
   'natural language processing',
-  'transformer model',
+  '自然言語処理',
   'language model',
+  '言語モデル',
   'generative ai',
+  '生成AI',
+  '生成系AI',
+  'transformer model',
+  'self-attention',
+  'self attention',
+  'gpt-4',
+  'gpt-3.5',
+  'text-davinci',
+  'code-davinci',
   'huggingface',
-  'pytorch',
   'qlora',
-  'llama.cpp',
   'ggml',
+  'gptq',
+  'llama.cpp',
+  'fastchat',
   'gpt4all',
+  'wizardlm',
+  'wizardcoder',
 ]
 
 const EXCLUDES = [
