@@ -4,49 +4,24 @@ import {
 } from './lexicon/types/com/atproto/sync/subscribeRepos'
 import { FirehoseSubscriptionBase, getOpsByType } from './util/subscription'
 
-const INCLUDES = [
-  'LLM',
-  // 'GPT',  // too noisy, e.g. "ChatGPT"
-  'NLP',
-  'LLaMA',
-  'natural language processing',
-  '自然言語処理',
-  'language model',
-  '言語モデル',
-  'generative ai',
-  '生成AI',
-  '生成系AI',
-  'transformer model',
-  'self-attention',
-  'self attention',
-  'gpt-4',
-  'gpt-3.5',
-  'text-davinci',
-  'code-davinci',
-  'huggingface',
-  'qlora',
-  'ggml',
-  'gptq',
-  'llama.cpp',
-  'fastchat',
-  'gpt4all',
-  'wizardlm',
-  'wizardcoder',
-]
-
-const EXCLUDES = [
-  'Summary by GPT',
-]
-
-const isLLM = (text: string) => {
-  const lowerText = text.toLowerCase()
-  const isExclude = EXCLUDES.some((tag) => (tag.toLowerCase() === tag ? lowerText : text).includes(tag))
-  if (isExclude) return false
-  const isInclude = INCLUDES.some((tag) => (tag.toLowerCase() === tag ? lowerText : text).includes(tag))
-  if (!isInclude) return false
-  // TODO: ask GPT-3 if this is a post about LLM research
-  return true
+type RuleType = {
+  includePattern: RegExp | null
+  excludePattern: RegExp | null
+  feedShortName: string
 }
+
+const RULES: RuleType[] = [
+  {
+    includePattern: /\bLLMs?\b|\bNLP\b|language model|言語モデル|natural language processing|自然言語処理|generative ai|生成系?AI|transformer model|self[-\s]attention|gpt[-\s]?4|gpt[-\s]?3\.5|huggingface|qlora|ggml|gptq|llama\.cpp|fastchat|gpt4all|langchain|llama[_\s]?index|autogpt|babyagi/i,
+    excludePattern: null,
+    feedShortName: 'whats-llm',
+  },
+  {
+    includePattern: /chat\s?gpt|\bGPT\b/i,
+    excludePattern: /Summary by GPT/,
+    feedShortName: 'whats-gpt',
+  },
+]
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
@@ -61,34 +36,30 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     // }
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
-    const postsToCreate = ops.posts.creates
-      .filter((create) => {
-        // only LLM-related posts
-        if (isLLM(create.record.text)) {
-          console.log(create)
-          return true
-        } else {
-          return false
-        }
-      })
-      .map((create) => {
-        // map LLM-related posts to a db row
-        return {
-          uri: create.uri,
-          cid: create.cid,
-          replyParent: create.record?.reply?.parent.uri ?? null,
-          replyRoot: create.record?.reply?.root.uri ?? null,
-          indexedAt: new Date().toISOString(),
-        }
-      })
-
     if (postsToDelete.length > 0) {
       await this.db
         .deleteFrom('post')
         .where('uri', 'in', postsToDelete)
         .execute()
     }
+
+    const postsToCreate = RULES.map(({ includePattern, excludePattern, feedShortName }) => (
+      ops.posts.creates
+        .filter((create) => excludePattern ? !excludePattern.test(create.record.text) : true)
+        .filter((create) => includePattern ? includePattern.test(create.record.text) : true)
+        .map((create) => ({
+          uri: create.uri,
+          cid: create.cid,
+          replyParent: create.record?.reply?.parent.uri ?? null,
+          replyRoot: create.record?.reply?.root.uri ?? null,
+          indexedAt: new Date().toISOString(),
+          feedShortName: feedShortName,
+          text: create.record.text,
+          score: -1.0,
+        }))
+      )).flat()
     if (postsToCreate.length > 0) {
+      console.log('postsToCreate', postsToCreate)
       await this.db
         .insertInto('post')
         .values(postsToCreate)

@@ -17,6 +17,9 @@ migrations['001'] = {
       .addColumn('replyParent', 'varchar')
       .addColumn('replyRoot', 'varchar')
       .addColumn('indexedAt', 'varchar', (col) => col.notNull())
+      .addColumn('feedShortName', 'varchar', (col) => col.notNull())
+      .addColumn('text', 'varchar', (col) => col.notNull())
+      .addColumn('score', 'real', (col) => col.notNull())
       .execute()
     await db.schema
       .createTable('sub_state')
