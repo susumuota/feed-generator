@@ -9,7 +9,7 @@ export type Post = {
   replyParent: string | null
   replyRoot: string | null
   indexedAt: string
-  feedShortName: string
+  feed: string
   text: string
   score: number
 }
