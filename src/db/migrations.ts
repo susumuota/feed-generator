@@ -17,6 +17,12 @@ migrations['001'] = {
       .addColumn('replyParent', 'varchar')
       .addColumn('replyRoot', 'varchar')
       .addColumn('indexedAt', 'varchar', (col) => col.notNull())
+      .addColumn('author', 'varchar', (col) => col.notNull())
+      .addColumn('text', 'varchar', (col) => col.notNull())
+      .addColumn('feed', 'varchar', (col) => col.notNull())
+      .addColumn('metric', 'varchar', (col) => col.notNull())
+      .addColumn('rating', 'real', (col) => col.notNull())
+      .addColumn('explanation', 'varchar')
       .execute()
     await db.schema
       .createTable('sub_state')
@@ -33,44 +39,16 @@ migrations['001'] = {
 migrations['002'] = {
   async up(db: Kysely<unknown>) {
     await db.schema
-      .alterTable('post')
-      .addColumn('feed', 'varchar')
+      .createTable('llm_usage')
+      .addColumn('uri', 'varchar', (col) => col.primaryKey())
+      .addColumn('cid', 'varchar', (col) => col.notNull())
+      .addColumn('indexedAt', 'varchar', (col) => col.notNull())
+      .addColumn('promptTokens', 'integer', (col) => col.notNull())
+      .addColumn('completionTokens', 'integer', (col) => col.notNull())
+      .addColumn('totalTokens', 'integer', (col) => col.notNull())
       .execute()
   },
   async down(db: Kysely<unknown>) {
-    await db.schema
-      .alterTable('post')
-      .dropColumn('feed')
-      .execute()
-  },
-}
-
-migrations['003'] = {
-  async up(db: Kysely<unknown>) {
-    await db.schema
-      .alterTable('post')
-      .addColumn('text', 'varchar')
-      .execute()
-  },
-  async down(db: Kysely<unknown>) {
-    await db.schema
-      .alterTable('post')
-      .dropColumn('text')
-      .execute()
-  },
-}
-
-migrations['004'] = {
-  async up(db: Kysely<unknown>) {
-    await db.schema
-      .alterTable('post')
-      .addColumn('score', 'real')
-      .execute()
-  },
-  async down(db: Kysely<unknown>) {
-    await db.schema
-      .alterTable('post')
-      .dropColumn('score')
-      .execute()
+    await db.schema.dropTable('llm_usage').execute()
   },
 }

@@ -1,6 +1,7 @@
 import { InvalidRequestError } from '@atproto/xrpc-server'
 import { QueryParams } from '../lexicon/types/app/bsky/feed/getFeedSkeleton'
 import { AppContext } from '../config'
+import { SkeletonItem, ReasonRating } from './types'
 
 // max 15 chars
 export const shortname = 'whats-llm'
@@ -10,6 +11,7 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
     .selectFrom('post')
     .selectAll()
     .where('feed', '=', shortname)
+    .where('rating', '>', 4)  // TODO: tweak this
     .orderBy('indexedAt', 'desc')
     .orderBy('cid', 'desc')
     .limit(params.limit)
@@ -27,8 +29,14 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
   }
   const res = await builder.execute()
 
-  const feed = res.map((row) => ({
+  const feed: SkeletonItem[] = res.map((row) => ({
     post: row.uri,
+    reason: {
+      $type: 'io.github.susumuota.feed.defs#skeletonReasonRating',
+      metric: row.metric,
+      rating: row.rating,
+      explanation: row.explanation ?? '',
+    } as ReasonRating,
   }))
 
   let cursor: string | undefined
