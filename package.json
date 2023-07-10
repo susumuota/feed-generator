@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "publishFeed": "ts-node scripts/publishFeedGen.ts",
-    "ratePosts": "ts-node scripts/ratePost.ts",
+    "ratePosts": "ts-node scripts/ratePosts.ts",
     "start": "ts-node src/index.ts",
     "format": "prettier --check .",
     "build": "tsc"
