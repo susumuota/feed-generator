@@ -15,7 +15,7 @@ type RuleType = {
 
 const RULES: RuleType[] = [
   {
-    include: /\bLLMs?\b|language model|言語モデル|transformer model|self[-\s]attention|gpt[-\s]?4|gpt[-\s]?3\.5|huggingface|qlora|ggml|gptq|llama\.cpp|fastchat|gpt4all|langchain|llama[_\s]?index|autogpt|babyagi/i,
+    include: /\bLLMs?\b|language model|言語モデル|transformer model|transformer architecture|self[-\s]attention|gpt[-\s]?4|gpt[-\s]?3\.5|anthropic|hugging\s?face|llama|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\.cpp|fastchat|gpt4all|langchain|llama[_\s]?index|autogpt|babyagi/i,
     exclude: null,
     feed: 'whats-llm',
     metric: 'RegExp',
@@ -31,7 +31,7 @@ const RULES: RuleType[] = [
     explanation: null,
   },
   {
-    include: /generative ai|生成系?AI/i,
+    include: /generative ai|生成系?\s?AI/i,
     exclude: null,
     feed: 'whats-gen-ai',
     metric: 'RegExp',
