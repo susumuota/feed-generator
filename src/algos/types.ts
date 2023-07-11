@@ -16,6 +16,7 @@ export type ReasonRepost = {
   repost: string // repost URI
 }
 
+// custom reason
 export type ReasonRating = {
   $type: 'io.github.susumuota.feed.defs#skeletonReasonRating'
   metric: string
