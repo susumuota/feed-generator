@@ -1,14 +1,25 @@
 import dotenv from 'dotenv'
 import { createDb } from '../src/db'
-import { Configuration, CreateChatCompletionRequest, OpenAIApi } from 'openai';
+import { Configuration, CreateChatCompletionRequest, OpenAIApi } from 'openai'
 
 
-const getPosts = async (feed: string, limit: number) => (
+const RATINGS = [
+  {
+    feed: 'whats-llm',
+    limit: 1,  // API will be called {limit} times per minute
+    target: 'AI researchers',
+    feature: 'informative',
+  },
+]
+
+const INTERVAL_MS = 1000 * 60  // run() will be called every minute
+
+const getPosts = async (feed: string, metric: string, limit: number) => (
   createDb(process.env.FEEDGEN_SQLITE_LOCATION ?? ':memory:')
     .selectFrom('post')
     .selectAll()
     .where('feed', '=', feed)
-    .where('metric', '=', 'RegExp')
+    .where('metric', '=', metric)
     .orderBy('indexedAt', 'desc')
     .orderBy('cid', 'desc')
     .limit(limit)
@@ -71,27 +82,40 @@ const run = async () => {
     })
     const openai = new OpenAIApi(configuration)
 
-    const posts = await getPosts('whats-llm', 1)
+    RATINGS.forEach(async ({ feed, limit, target, feature }) => {
+      const posts = await getPosts(feed, 'RegExp', limit)
 
-    posts.forEach(async (post) => {
-      console.log({ post })
+      posts.forEach(async (post) => {
+        console.log({ post })
 
-      const params = createChatCompletionParams('AI researchers', 'informative', post.text)
-      const completion = await openai.createChatCompletion(params)
-      const args = JSON.parse(completion.data.choices?.[0]?.message?.function_call?.arguments ?? "{}")
-      console.log({ args })
+        const params = createChatCompletionParams(target, feature, post.text)
+        const completion = await openai.createChatCompletion(params)
+        const args = JSON.parse(
+          completion.data.choices?.[0]?.message?.function_call?.arguments ?? "{}"
+        )
+        console.log({ args })
 
-      console.log({ usage: completion.data.usage })
-      if (completion.data.usage) {
-        insertLlmUsage(post.uri, post.cid, completion.data.usage.prompt_tokens, completion.data.usage.completion_tokens, completion.data.usage.total_tokens)
-      }
+        insertLlmUsage(
+          post.uri,
+          post.cid,
+          completion.data.usage?.prompt_tokens ?? 0,
+          completion.data.usage?.completion_tokens ?? 0,
+          completion.data.usage?.total_tokens ?? 0
+        )
 
-      const results = await updatePost(post.uri, 'LLM', args?.rating ?? 0, args?.explanation ?? 'Error')
-      console.log({ results })
+        const results = await updatePost(
+          post.uri,
+          `${feature} for ${target}`,
+          args?.rating ?? post.rating,
+          args?.explanation ?? '',
+        )
+        console.log({ results })
+      })
     })
   } catch (e: any) {
     console.error(e)
   }
 }
 
-setInterval(run, 1000 * 60)
+// loop forever
+setInterval(run, INTERVAL_MS)
