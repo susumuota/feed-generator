@@ -63,31 +63,35 @@ const createChatCompletionParams = (target: string, feature: string, text: strin
 })
 
 const run = async () => {
-  dotenv.config()
+  try {
+    dotenv.config()
 
-  const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-  })
-  const openai = new OpenAIApi(configuration)
+    const configuration = new Configuration({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+    const openai = new OpenAIApi(configuration)
 
-  const posts = await getPosts('whats-llm', 1)
+    const posts = await getPosts('whats-llm', 1)
 
-  posts.forEach(async (post) => {
-    console.log({ post })
+    posts.forEach(async (post) => {
+      console.log({ post })
 
-    const params = createChatCompletionParams('AI researchers', 'informative', post.text)
-    const completion = await openai.createChatCompletion(params)
-    const args = JSON.parse(completion.data.choices?.[0]?.message?.function_call?.arguments ?? "{}")
-    console.log({ args })
+      const params = createChatCompletionParams('AI researchers', 'informative', post.text)
+      const completion = await openai.createChatCompletion(params)
+      const args = JSON.parse(completion.data.choices?.[0]?.message?.function_call?.arguments ?? "{}")
+      console.log({ args })
 
-    console.log({ usage: completion.data.usage })
-    if (completion.data.usage) {
-      insertLlmUsage(post.uri, post.cid, completion.data.usage.prompt_tokens, completion.data.usage.completion_tokens, completion.data.usage.total_tokens)
-    }
+      console.log({ usage: completion.data.usage })
+      if (completion.data.usage) {
+        insertLlmUsage(post.uri, post.cid, completion.data.usage.prompt_tokens, completion.data.usage.completion_tokens, completion.data.usage.total_tokens)
+      }
 
-    const results = await updatePost(post.uri, 'LLM', args?.rating ?? 0, args?.explanation ?? 'Error')
-    console.log({ results })
-  })
+      const results = await updatePost(post.uri, 'LLM', args?.rating ?? 0, args?.explanation ?? 'Error')
+      console.log({ results })
+    })
+  } catch (e: any) {
+    console.error(e)
+  }
 }
 
 setInterval(run, 1000 * 60)
