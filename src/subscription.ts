@@ -10,7 +10,7 @@ type RuleType = {
   feed: string
   metric: string
   rating: number
-  explanation: string | null
+  explanation: string
 }
 
 const RULES: RuleType[] = [
@@ -20,7 +20,7 @@ const RULES: RuleType[] = [
     feed: 'whats-llm',
     metric: 'RegExp',
     rating: 5,
-    explanation: null,
+    explanation: '',
   },
   {
     include: /chat\s?gpt|\bGPT\b|openai/i,
@@ -28,7 +28,7 @@ const RULES: RuleType[] = [
     feed: 'whats-gpt',
     metric: 'RegExp',
     rating: 5,
-    explanation: null,
+    explanation: '',
   },
   {
     include: /generative ai|生成系?\s?AI/i,
@@ -36,7 +36,7 @@ const RULES: RuleType[] = [
     feed: 'whats-gen-ai',
     metric: 'RegExp',
     rating: 5,
-    explanation: null,
+    explanation: '',
   },
 ]
 

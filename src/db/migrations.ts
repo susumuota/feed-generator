@@ -22,7 +22,7 @@ migrations['001'] = {
       .addColumn('feed', 'varchar', (col) => col.notNull())
       .addColumn('metric', 'varchar', (col) => col.notNull())
       .addColumn('rating', 'real', (col) => col.notNull())
-      .addColumn('explanation', 'varchar')
+      .addColumn('explanation', 'varchar', (col) => col.notNull())
       .execute()
     await db.schema
       .createTable('sub_state')

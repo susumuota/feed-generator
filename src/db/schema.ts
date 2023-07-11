@@ -15,7 +15,7 @@ export type Post = {
   feed: string
   metric: string
   rating: number
-  explanation: string | null
+  explanation: string
 }
 
 export type SubState = {

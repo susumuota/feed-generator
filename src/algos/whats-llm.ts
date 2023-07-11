@@ -35,7 +35,7 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
       $type: 'io.github.susumuota.feed.defs#skeletonReasonRating',
       metric: row.metric,
       rating: row.rating,
-      explanation: row.explanation ?? '',
+      explanation: row.explanation,
     } as ReasonRating,
   }))
 
