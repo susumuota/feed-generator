@@ -26,7 +26,7 @@ const run = async () => {
   // (Optional) A description of your feed
   // Ex: Top trending content from the whole network
   const description =
-    'Posts related to ChatGPT. Filtered by a regular expression /chats?gpt|\bGPT\b|openai/i.'
+    'Posts related to ChatGPT. Filtered by a regular expression.\nSource: https://github.com/susumuota/feed-generator'
 
   // (Optional) The path to an image to be used as your feed's avatar
   // Ex: ~/path/to/avatar.jpeg
