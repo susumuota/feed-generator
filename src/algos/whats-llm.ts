@@ -5,13 +5,14 @@ import { SkeletonItem, ReasonRating } from './types'
 
 // max 15 chars
 export const shortname = 'whats-llm'
+const threshold = 3 // TODO: tweak this
 
 export const handler = async (ctx: AppContext, params: QueryParams) => {
   let builder = ctx.db
     .selectFrom('post')
     .selectAll()
     .where('feed', '=', shortname)
-    .where('rating', '>', 3)  // TODO: tweak this
+    .where('rating', '>', threshold)
     .orderBy('indexedAt', 'desc')
     .orderBy('cid', 'desc')
     .limit(params.limit)

@@ -4,8 +4,8 @@ import { AppContext } from '../config'
 import { SkeletonItem, ReasonRating } from './types'
 
 // max 15 chars
-export const shortname = 'whats-gpt'
-const threshold = 4 // TODO: tweak this
+export const shortname = 'whats-llm-raw'
+const threshold = 0 // TODO: tweak this
 
 export const handler = async (ctx: AppContext, params: QueryParams) => {
   let builder = ctx.db

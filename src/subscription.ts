@@ -15,7 +15,8 @@ type RuleType = {
 
 const RULES: RuleType[] = [
   {
-    include: /\bLLMs?\b|language model|言語モデル|transformer model|transformer architecture|self[-\s]attention|gpt[-\s]?4|gpt[-\s]?3\.5|\banthropic\b|hugging\s?face|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\.cpp|fastchat|gpt4all|langchain|llama[_\s]?index|autogpt|babyagi/i,
+    include:
+      /\bLLMs?\b|language model|言語モデル|transformer model|transformer architecture|self[-\s]attention|gpt[-\s]?4|gpt[-\s]?3\.5|\banthropic\b|hugging\s?face|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\.cpp|fastchat|gpt4all|langchain|llama[_\s]?index|autogpt|babyagi/i,
     exclude: null,
     feed: 'whats-llm',
     metric: 'RegExp',
@@ -53,11 +54,16 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     // }
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
-    const postsToCreate = RULES.map(({ include, exclude, feed, metric, rating, explanation }) => (
-      ops.posts.creates
-        .filter((create) => include ? include.test(create.record.text) : true)
-        .filter((create) => exclude ? !exclude.test(create.record.text) : true)
-        .map((create) => ({
+    const postsToCreate = RULES.map(
+      ({ include, exclude, feed, metric, rating, explanation }) =>
+        ops.posts.creates
+          .filter((create) =>
+            include ? include.test(create.record.text) : true,
+          )
+          .filter((create) =>
+            exclude ? !exclude.test(create.record.text) : true,
+          )
+          .map((create) => ({
             uri: create.uri,
             cid: create.cid,
             replyParent: create.record?.reply?.parent.uri ?? null,
@@ -69,8 +75,8 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
             metric,
             rating,
             explanation,
-          }))
-      )).flat()
+          })),
+    ).flat()
 
     if (postsToDelete.length > 0) {
       await this.db
