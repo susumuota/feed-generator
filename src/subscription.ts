@@ -19,8 +19,11 @@ const RULES: RuleType[] = [
   {
     includeAuthors: null,
     excludeAuthors: null,
-    includeText:
-      /\bLLMs?\b|language model|言語モデル|transformer model|transformer architecture|self[-\s]attention|gpt[-\s]?4|gpt[-\s]?3\.5|\banthropic\b|hugging\s?face|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\.cpp|fastchat|gpt4all|langchain|llama[_\s]?index|autogpt|babyagi/i,
+    // prettier-ignore
+    includeText: new RegExp(
+      '\bLLMs?\b|language model|言語モデル|transformer model|transformer architecture|self[-\s]attention|gpt[-\s]?4|gpt[-\s]?3\.5|\banthropic\b|hugging\s?face|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\.cpp|fastchat|gpt4all|langchain|llama[_\s]?index|autogpt|babyagi',
+      'i',
+    ),
     excludeText: null,
     feed: 'whats-llm',
     metric: 'RegExp',
@@ -30,8 +33,9 @@ const RULES: RuleType[] = [
   {
     includeAuthors: null,
     excludeAuthors: null,
-    includeText: /chat\s?gpt|\bGPT\b|openai/i,
-    excludeText: /Summary by GPT/,
+    // prettier-ignore
+    includeText: new RegExp('chat\s?gpt|\bGPT\b|openai', 'i'),
+    excludeText: new RegExp('Summary by GPT', 'i'),
     feed: 'whats-gpt',
     metric: 'RegExp',
     rating: 5,
@@ -40,7 +44,8 @@ const RULES: RuleType[] = [
   {
     includeAuthors: null,
     excludeAuthors: null,
-    includeText: /generative ai|gen ai|生成系?\s?AI/i,
+    // prettier-ignore
+    includeText: new RegExp('generative ai|gen ai|生成系?\s?AI', 'i'),
     excludeText: null,
     feed: 'whats-gen-ai',
     metric: 'RegExp',
@@ -74,13 +79,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
   async handleEvent(evt: RepoEvent) {
     if (!isCommit(evt)) return
     const ops = await getOpsByType(evt)
-
-    // This logs the text of every post off the firehose.
-    // Just for fun :)
-    // Delete before actually using
-    // for (const post of ops.posts.creates) {
-    //   console.log(post.record.text)
-    // }
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
     const postsToCreate = RULES.map(
