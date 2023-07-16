@@ -58,6 +58,7 @@ const RULES: RuleType[] = [
       'did:plc:tlhqo7uw5d3rcohosg3io7t5', // hatena-tech.bsky.social // cspell:disable-line
       'did:plc:vtpyqvwce4x6gpa5dcizqecy', // techcrunch.bsky.social // cspell:disable-line
       'did:plc:z5xxhxqv6elnjzulyf7t22wk', // paper.bsky.social // cspell:disable-line
+      'did:plc:pv7fudnt4dspurzdnyq73pfe', // techmeme.com // cspell:disable-line
     ],
     excludeAuthors: null,
     includeText: null,
