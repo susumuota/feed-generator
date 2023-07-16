@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import { createDb } from '../src/db'
+import { createDb, Database } from '../src/db'
 import { Configuration, CreateChatCompletionRequest, OpenAIApi } from 'openai'
 
 const RATINGS = [
@@ -13,8 +13,13 @@ const RATINGS = [
 
 const INTERVAL_MS = 1000 * 60 // run() will be called every minute
 
-const getPosts = async (feed: string, metric: string, limit: number) =>
-  createDb(process.env.FEEDGEN_SQLITE_LOCATION ?? ':memory:')
+const getPosts = async (
+  db: Database,
+  feed: string,
+  metric: string,
+  limit: number,
+) =>
+  db
     .selectFrom('post')
     .selectAll()
     .where('feed', '=', feed)
@@ -25,25 +30,27 @@ const getPosts = async (feed: string, metric: string, limit: number) =>
     .execute()
 
 const updatePost = async (
+  db: Database,
   uri: string,
   metric: string,
   rating: number,
   explanation: string,
 ) =>
-  createDb(process.env.FEEDGEN_SQLITE_LOCATION ?? ':memory:')
+  db
     .updateTable('post')
     .set({ metric, rating, explanation })
     .where('uri', '=', uri)
     .execute()
 
 const insertLlmUsage = async (
+  db: Database,
   uri: string,
   cid: string,
   promptTokens: number,
   completionTokens: number,
   totalTokens: number,
 ) =>
-  createDb(process.env.FEEDGEN_SQLITE_LOCATION ?? ':memory:')
+  db
     .insertInto('llm_usage')
     .values({
       uri,
@@ -96,13 +103,15 @@ const run = async () => {
   try {
     dotenv.config()
 
+    const db = createDb(process.env.FEEDGEN_SQLITE_LOCATION ?? ':memory:')
+
     const configuration = new Configuration({
       apiKey: process.env.OPENAI_API_KEY,
     })
     const openai = new OpenAIApi(configuration)
 
     RATINGS.forEach(async ({ feed, limit, target, feature }) => {
-      const posts = await getPosts(feed, 'RegExp', limit) // get only 'RegExp' posts
+      const posts = await getPosts(db, feed, 'RegExp', limit) // get only 'RegExp' posts
 
       posts.forEach(async (post) => {
         console.log({ post })
@@ -116,6 +125,7 @@ const run = async () => {
         console.log({ args })
 
         insertLlmUsage(
+          db,
           post.uri,
           post.cid,
           completion.data.usage?.prompt_tokens ?? 0,
@@ -124,6 +134,7 @@ const run = async () => {
         )
 
         const results = await updatePost(
+          db,
           post.uri,
           `${feature} for ${target}`, // previously 'RegExp'. update it so that it won't be selected again
           args?.rating ?? 0, // TODO: if rating is not provided, what should we do? post.rating?
