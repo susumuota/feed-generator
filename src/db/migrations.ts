@@ -1,4 +1,5 @@
 import { Kysely, Migration, MigrationProvider } from 'kysely'
+import { DatabaseSchema } from './schema'
 
 const migrations: Record<string, Migration> = {}
 
@@ -17,8 +18,6 @@ migrations['001'] = {
       .addColumn('replyParent', 'varchar')
       .addColumn('replyRoot', 'varchar')
       .addColumn('indexedAt', 'varchar', (col) => col.notNull())
-      .addColumn('author', 'varchar', (col) => col.notNull())
-      .addColumn('text', 'varchar', (col) => col.notNull())
       .addColumn('feed', 'varchar', (col) => col.notNull())
       .addColumn('metric', 'varchar', (col) => col.notNull())
       .addColumn('rating', 'real', (col) => col.notNull())
@@ -39,16 +38,79 @@ migrations['001'] = {
 migrations['002'] = {
   async up(db: Kysely<unknown>) {
     await db.schema
-      .createTable('llm_usage')
-      .addColumn('uri', 'varchar', (col) => col.primaryKey())
-      .addColumn('cid', 'varchar', (col) => col.notNull())
-      .addColumn('indexedAt', 'varchar', (col) => col.notNull())
-      .addColumn('promptTokens', 'integer', (col) => col.notNull())
-      .addColumn('completionTokens', 'integer', (col) => col.notNull())
-      .addColumn('totalTokens', 'integer', (col) => col.notNull())
+      .createTable('rule')
+      .addColumn('feed', 'varchar', (col) => col.primaryKey())
+      .addColumn('includeAuthor', 'varchar')
+      .addColumn('excludeAuthor', 'varchar')
+      .addColumn('includeText', 'varchar')
+      .addColumn('excludeText', 'varchar')
       .execute()
   },
   async down(db: Kysely<unknown>) {
-    await db.schema.dropTable('llm_usage').execute()
+    await db.schema.dropTable('rule').execute()
+  },
+}
+
+migrations['003'] = {
+  async up(db: Kysely<DatabaseSchema>) {
+    await db
+      .insertInto('rule')
+      .values({
+        feed: 'whats-llm',
+        includeAuthor: null,
+        excludeAuthor: null,
+        includeText:
+          '\\bLLMs?\\b|language model|言語モデル|transformer model|transformer architecture|self[-\\s]attention|gpt[-\\s]?4|gpt[-\\s]?3\\.5|\\banthropic\\b|hugging\\s?face|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\\.cpp|llama[-\\s]2|fastchat|gpt4all|langchain|llama[_\\s]?index|autogpt|babyagi',
+        excludeText: null,
+      })
+      .execute()
+    await db
+      .insertInto('rule')
+      .values({
+        feed: 'whats-gpt',
+        includeAuthor: null,
+        excludeAuthor: null,
+        includeText: 'chat\\s?gpt|\\bGPT\\b|openai',
+        excludeText: 'Summary by GPT',
+      })
+      .execute()
+    await db
+      .insertInto('rule')
+      .values({
+        feed: 'whats-gen-ai',
+        includeAuthor: null,
+        excludeAuthor: null,
+        includeText: 'generative ai|gen ai|生成系?\\s?AI',
+        excludeText: null,
+      })
+      .execute()
+
+    // convert from handle to did
+    // https://bsky.social/xrpc/com.atproto.identity.resolveHandle?handle=newsycombinator.bsky.social
+    // 'did:plc:7dh44snmqoa4gyzv3652gm3j', // newsycombinator.bsky.social // cspell:disable-line
+    // 'did:plc:apeaukvxm3yedgqw5zcf5pwc', // hacker-news-jp.bsky.social // cspell:disable-line
+    // 'did:plc:eidn2o5kwuaqcss7zo7ivye5', // github-trending.bsky.social // cspell:disable-line
+    // 'did:plc:ppuqidjyabv5iwzeoxt4fq5o', // github-trending-js.bsky.social // cspell:disable-line
+    // 'did:plc:tlhqo7uw5d3rcohosg3io7t5', // hatena-tech.bsky.social // cspell:disable-line
+    // 'did:plc:vtpyqvwce4x6gpa5dcizqecy', // techcrunch.bsky.social // cspell:disable-line
+    // 'did:plc:z5xxhxqv6elnjzulyf7t22wk', // paper.bsky.social // cspell:disable-line
+    // 'did:plc:pv7fudnt4dspurzdnyq73pfe', // techmeme.com // cspell:disable-line
+    await db
+      .insertInto('rule')
+      .values({
+        feed: 'tech-news',
+        includeAuthor:
+          'did:plc:7dh44snmqoa4gyzv3652gm3j|did:plc:apeaukvxm3yedgqw5zcf5pwc|did:plc:eidn2o5kwuaqcss7zo7ivye5|did:plc:ppuqidjyabv5iwzeoxt4fq5o|did:plc:tlhqo7uw5d3rcohosg3io7t5|did:plc:vtpyqvwce4x6gpa5dcizqecy|did:plc:z5xxhxqv6elnjzulyf7t22wk|did:plc:pv7fudnt4dspurzdnyq73pfe', // cspell:disable-line
+        excludeAuthor: null,
+        includeText: null,
+        excludeText: null,
+      })
+      .execute()
+  },
+  async down(db: Kysely<DatabaseSchema>) {
+    await db.deleteFrom('rule').where('feed', '=', 'whats-llm').execute()
+    await db.deleteFrom('rule').where('feed', '=', 'whats-gpt').execute()
+    await db.deleteFrom('rule').where('feed', '=', 'whats-gen-ai').execute()
+    await db.deleteFrom('rule').where('feed', '=', 'tech-news').execute()
   },
 }

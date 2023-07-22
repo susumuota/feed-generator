@@ -1,6 +1,8 @@
 import dotenv from 'dotenv'
-import { createDb, Database } from '../src/db'
+import { BskyAgent } from '@atproto/api'
+import { AtUri } from '@atproto/uri'
 import { Configuration, CreateChatCompletionRequest, OpenAIApi } from 'openai'
+import { createDb, Database } from '../src/db'
 
 const RATINGS = [
   {
@@ -10,8 +12,6 @@ const RATINGS = [
     feature: 'informative',
   },
 ]
-
-const INTERVAL_MS = 1000 * 60 // run() will be called every minute
 
 const getPosts = async (
   db: Database,
@@ -40,27 +40,6 @@ const updatePost = async (
     .updateTable('post')
     .set({ metric, rating, explanation })
     .where('uri', '=', uri)
-    .execute()
-
-const insertLlmUsage = async (
-  db: Database,
-  uri: string,
-  cid: string,
-  promptTokens: number,
-  completionTokens: number,
-  totalTokens: number,
-) =>
-  db
-    .insertInto('llm_usage')
-    .values({
-      uri,
-      cid,
-      indexedAt: new Date().toISOString(),
-      promptTokens,
-      completionTokens,
-      totalTokens,
-    })
-    .onConflict((oc) => oc.doNothing())
     .execute()
 
 const createChatCompletionParams = (
@@ -105,38 +84,39 @@ const run = async () => {
 
     const db = createDb(process.env.FEEDGEN_SQLITE_LOCATION ?? ':memory:')
 
+    const agent = new BskyAgent({ service: 'https://bsky.social' })
+
     const configuration = new Configuration({
       apiKey: process.env.OPENAI_API_KEY,
     })
     const openai = new OpenAIApi(configuration)
 
     RATINGS.forEach(async ({ feed, limit, target, feature }) => {
-      const posts = await getPosts(db, feed, 'RegExp', limit) // get only 'RegExp' posts
+      const posts = await getPosts(db, feed, 'rule', limit) // get only 'rule' posts
 
       posts.forEach(async (post) => {
         console.log({ post })
 
-        const params = createChatCompletionParams(target, feature, post.text)
-        const completion = await openai.createChatCompletion(params)
+        const u = new AtUri(post.uri)
+        const p = await agent.getPost({
+          repo: u.hostname,
+          rkey: u.rkey,
+          cid: post.cid,
+        })
+        const text = p?.value?.text ?? ''
+        console.log({ text })
+
+        const params = createChatCompletionParams(target, feature, text)
+        const c = await openai.createChatCompletion(params)
         const args = JSON.parse(
-          completion.data.choices?.[0]?.message?.function_call?.arguments ??
-            '{}',
+          c.data.choices?.[0]?.message?.function_call?.arguments ?? '{}',
         )
         console.log({ args })
-
-        insertLlmUsage(
-          db,
-          post.uri,
-          post.cid,
-          completion.data.usage?.prompt_tokens ?? 0,
-          completion.data.usage?.completion_tokens ?? 0,
-          completion.data.usage?.total_tokens ?? 0,
-        )
 
         const results = await updatePost(
           db,
           post.uri,
-          `${feature} for ${target}`, // previously 'RegExp'. update it so that it won't be selected again
+          `${feature} for ${target}`,
           args?.rating ?? 0, // TODO: if rating is not provided, what should we do? post.rating?
           args?.explanation ?? 'Error: No explanation provided',
         )
@@ -148,5 +128,4 @@ const run = async () => {
   }
 }
 
-// loop forever
-setInterval(run, INTERVAL_MS)
+run()

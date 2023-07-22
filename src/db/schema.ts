@@ -1,7 +1,7 @@
 export type DatabaseSchema = {
   post: Post
   sub_state: SubState
-  llm_usage: LlmUsage
+  rule: Rule
 }
 
 export type Post = {
@@ -10,8 +10,6 @@ export type Post = {
   replyParent: string | null
   replyRoot: string | null
   indexedAt: string
-  author: string
-  text: string
   feed: string
   metric: string
   rating: number
@@ -23,11 +21,10 @@ export type SubState = {
   cursor: number
 }
 
-export type LlmUsage = {
-  uri: string
-  cid: string
-  indexedAt: string
-  promptTokens: number
-  completionTokens: number
-  totalTokens: number
+export type Rule = {
+  feed: string
+  includeAuthor: string | null
+  excludeAuthor: string | null
+  includeText: string | null
+  excludeText: string | null
 }
