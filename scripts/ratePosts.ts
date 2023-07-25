@@ -55,7 +55,7 @@ const createChatCompletionParams = (
         `Your task is to filter ${feature} tweets for ${target}.` +
         ` Please rate the given tweet on a scale of 1 to 10 for ${target}, ` +
         ` where 1 represents "Not ${feature} at all" and 10 represents "Very ${feature}".` +
-        ' Provide a brief explanation for your rating.',
+        '', // ' Provide a brief explanation for your rating.',
     },
     {
       role: 'user',
@@ -69,9 +69,9 @@ const createChatCompletionParams = (
         type: 'object',
         properties: {
           rating: { type: 'number' },
-          explanation: { type: 'string' },
+          // explanation: { type: 'string' },
         },
-        required: ['rating', 'explanation'],
+        required: ['rating'], // , 'explanation'],
       },
     },
   ],
@@ -118,7 +118,7 @@ const run = async () => {
           post.uri,
           `${feature} for ${target}`,
           args?.rating ?? 0, // TODO: if rating is not provided, what should we do? post.rating?
-          args?.explanation ?? 'Error: No explanation provided',
+          args?.explanation ?? '', // 'Error: No explanation provided',
         )
         console.log({ results })
       })
