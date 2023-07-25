@@ -36,6 +36,12 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     const ops = await getOpsByType(evt)
 
     const postsToDelete = ops.posts.deletes.map((del) => del.uri)
+    if (postsToDelete.length > 0) {
+      await this.db
+        .deleteFrom('post')
+        .where('uri', 'in', postsToDelete)
+        .execute()
+    }
 
     const postsToCreate = this.rules
       .map(({ feed, includeAuthor, excludeAuthor, includeText, excludeText }) =>
@@ -65,13 +71,6 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
           })),
       )
       .flat()
-
-    if (postsToDelete.length > 0) {
-      await this.db
-        .deleteFrom('post')
-        .where('uri', 'in', postsToDelete)
-        .execute()
-    }
     if (postsToCreate.length > 0) {
       console.log('postsToCreate', postsToCreate)
       await this.db

@@ -58,30 +58,10 @@ migrations['003'] = {
       .values({
         feed: 'whats-llm',
         includeAuthor: null,
-        excludeAuthor: null,
+        excludeAuthor: 'did:plc:xxno7p4xtpkxtn4ok6prtlcb', // lovefairy.nl // cspell:disable-line
         includeText:
-          '\\bLLMs?\\b|language model|言語モデル|transformer model|transformer architecture|self[-\\s]attention|gpt[-\\s]?4|gpt[-\\s]?3\\.5|\\banthropic\\b|hugging\\s?face|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\\.cpp|llama[-\\s]2|fastchat|gpt4all|langchain|llama[_\\s]?index|autogpt|babyagi',
-        excludeText: null,
-      })
-      .execute()
-    await db
-      .insertInto('rule')
-      .values({
-        feed: 'whats-gpt',
-        includeAuthor: null,
-        excludeAuthor: null,
-        includeText: 'chat\\s?gpt|\\bGPT\\b|openai',
+          '\\bLLMs?\\b|language model|言語モデル|transformer model|transformer architecture|self[-\\s]attention|gpt[-\\s]?4|gpt[-\\s]?3\\.5|\\banthropic\\b|hugging\\s?face|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\\.cpp|llama[-\\s]2|fastchat|gpt4all|langchain|llama[_\\s]?index|autogpt|babyagi|generative ai|生成系?\\s?AI|chat\\s?gpt|\\bGPT\\b|openai',
         excludeText: 'Summary by GPT',
-      })
-      .execute()
-    await db
-      .insertInto('rule')
-      .values({
-        feed: 'whats-gen-ai',
-        includeAuthor: null,
-        excludeAuthor: null,
-        includeText: 'generative ai|gen ai|生成系?\\s?AI',
-        excludeText: null,
       })
       .execute()
 
