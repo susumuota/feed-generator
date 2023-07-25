@@ -21,12 +21,12 @@ const run = async () => {
 
   // A display name for your feed
   // Ex: What's Hot
-  const displayName = 'LLM (Uncensored)'
+  const displayName = 'LLM (<= threshold)'
 
   // (Optional) A description of your feed
   // Ex: Top trending content from the whole network
   const description =
-    'Posts related to LLM (Large Language Model). This feed is just filtered by a regular expression. No GPT-3.5 rating and filtering.\nSource: https://github.com/susumuota/feed-generator'
+    'Posts related to LLM (Large Language Model). This feed collects posts that have a rating below the threshold.\nSource: https://github.com/susumuota/feed-generator'
 
   // (Optional) The path to an image to be used as your feed's avatar
   // Ex: ~/path/to/avatar.jpeg
