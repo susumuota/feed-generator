@@ -60,7 +60,7 @@ migrations['003'] = {
         includeAuthor: null,
         excludeAuthor: 'did:plc:xxno7p4xtpkxtn4ok6prtlcb', // lovefairy.nl // cspell:disable-line
         includeText:
-          '\\bLLMs?\\b|language model|言語モデル|transformer model|transformer architecture|self[-\\s]attention|gpt[-\\s]?4|gpt[-\\s]?3\\.5|\\banthropic\\b|hugging\\s?face|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\\.cpp|llama[-\\s]2|fastchat|gpt4all|langchain|llama[_\\s]?index|autogpt|babyagi|generative ai|生成系?\\s?AI|chat\\s?gpt|\\bGPT\\b|openai',
+          '\\bLLMs?\\b|language model|言語モデル|transformer model|transformer architecture|self[-\\s]attention|gpt[-\\s]?4|gpt[-\\s]?3\\.5|\\banthropic\\b|hugging\\s?face|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\\.cpp|llama[-\\s]2|fastchat|gpt4all|langchain|llama[_\\s]?index|autogpt|babyagi|generative ai|生成系?\\s?AI|\\bGPT\\b|openai', // |chat\\s?gpt|
         excludeText: 'Summary by GPT',
       })
       .execute()
@@ -89,8 +89,6 @@ migrations['003'] = {
   },
   async down(db: Kysely<DatabaseSchema>) {
     await db.deleteFrom('rule').where('feed', '=', 'whats-llm').execute()
-    await db.deleteFrom('rule').where('feed', '=', 'whats-gpt').execute()
-    await db.deleteFrom('rule').where('feed', '=', 'whats-gen-ai').execute()
     await db.deleteFrom('rule').where('feed', '=', 'tech-news').execute()
   },
 }
