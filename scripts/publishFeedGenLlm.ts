@@ -26,7 +26,7 @@ const run = async () => {
   // (Optional) A description of your feed
   // Ex: Top trending content from the whole network
   const description =
-    'Posts related to LLM (Large Language Model). Filtered by a regular expression, rated by GPT-3.5 and filtered by a threshold.\nSource: https://github.com/susumuota/feed-generator'
+    'Posts related to LLM (Large Language Model). Filtered by a regular expression, rated by GPT-3.5 and filtered by a threshold. See also "LLM (rating < 4)" feed that have a rating below the threshold.\nSource: https://github.com/susumuota/feed-generator'
 
   // (Optional) The path to an image to be used as your feed's avatar
   // Ex: ~/path/to/avatar.jpeg
