@@ -27,4 +27,6 @@ export type Rule = {
   excludeAuthor: string | null
   includeText: string | null
   excludeText: string | null
+  includeLang: string | null
+  excludeLang: string | null
 }

@@ -10,7 +10,7 @@ export const migrationProvider: MigrationProvider = {
 }
 
 migrations['001'] = {
-  async up(db: Kysely<unknown>) {
+  async up(db: Kysely<any>) {
     await db.schema
       .createTable('post')
       .addColumn('uri', 'varchar', (col) => col.primaryKey())
@@ -29,14 +29,14 @@ migrations['001'] = {
       .addColumn('cursor', 'integer', (col) => col.notNull())
       .execute()
   },
-  async down(db: Kysely<unknown>) {
+  async down(db: Kysely<any>) {
     await db.schema.dropTable('post').execute()
     await db.schema.dropTable('sub_state').execute()
   },
 }
 
 migrations['002'] = {
-  async up(db: Kysely<unknown>) {
+  async up(db: Kysely<any>) {
     await db.schema
       .createTable('rule')
       .addColumn('feed', 'varchar', (col) => col.primaryKey())
@@ -44,15 +44,17 @@ migrations['002'] = {
       .addColumn('excludeAuthor', 'varchar')
       .addColumn('includeText', 'varchar')
       .addColumn('excludeText', 'varchar')
+      .addColumn('includeLang', 'varchar')
+      .addColumn('excludeLang', 'varchar')
       .execute()
   },
-  async down(db: Kysely<unknown>) {
+  async down(db: Kysely<any>) {
     await db.schema.dropTable('rule').execute()
   },
 }
 
 migrations['003'] = {
-  async up(db: Kysely<DatabaseSchema>) {
+  async up(db: Kysely<any>) {
     await db
       .insertInto('rule')
       .values({
@@ -60,8 +62,23 @@ migrations['003'] = {
         includeAuthor: null,
         excludeAuthor: 'did:plc:xxno7p4xtpkxtn4ok6prtlcb', // lovefairy.nl // cspell:disable-line
         includeText:
-          '\\bLLMs?\\b|language model|言語モデル|transformer model|transformer architecture|self[-\\s]attention|gpt[-\\s]?4|gpt[-\\s]?3\\.5|\\banthropic\\b|hugging\\s?face|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\\.cpp|llama[-\\s]2|fastchat|gpt4all|langchain|llama[_\\s]?index|autogpt|babyagi|generative ai|生成系?\\s?AI|\\bGPT\\b|openai', // |chat\\s?gpt|
-        excludeText: 'Summary by GPT',
+          '\\bLLMs?\\b|language model|言語モデル|foundation model|transformer model|transformer architecture|self[-\\s]attention|gpt[-\\s]?4|gpt[-\\s]?3\\.5|\\banthropic\\b|hugging\\s?face|llama[-\\s]2|Stable\\s?Beluga|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\\.cpp|fastchat|gpt4all|langchain|llama[_\\s]?index|autogpt|babyagi|generative ai|生成系?\\s?AI|\\bGPT\\b|openai',
+        excludeText: 'Summary by GPT|chat\\s?gpt',
+        includeLang: 'en|ja|unknown',
+        excludeLang: null,
+      })
+      .execute()
+
+    await db
+      .insertInto('rule')
+      .values({
+        feed: 'whats-chatgpt',
+        includeAuthor: null,
+        excludeAuthor: null,
+        includeText: 'chat\\s?gpt',
+        excludeText: null,
+        includeLang: 'en|ja|unknown',
+        excludeLang: null,
       })
       .execute()
 
@@ -84,11 +101,14 @@ migrations['003'] = {
         excludeAuthor: null,
         includeText: null,
         excludeText: null,
+        includeLang: null,
+        excludeLang: null,
       })
       .execute()
   },
-  async down(db: Kysely<DatabaseSchema>) {
+  async down(db: Kysely<any>) {
     await db.deleteFrom('rule').where('feed', '=', 'whats-llm').execute()
+    await db.deleteFrom('rule').where('feed', '=', 'whats-chatgpt').execute()
     await db.deleteFrom('rule').where('feed', '=', 'tech-news').execute()
   },
 }
