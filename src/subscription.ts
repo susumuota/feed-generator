@@ -96,7 +96,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
                 : true,
             )
             .filter((create) => {
-              console.dir({ feed, create }, { depth: null })
+              console.log({ feed, create }) // console.dir({ feed, create }, { depth: null })
               return true
             })
             .map((create) => ({
