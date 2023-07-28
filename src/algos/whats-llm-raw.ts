@@ -5,13 +5,12 @@ import { SkeletonItem, ReasonRating } from './types'
 
 // max 15 chars
 export const shortname = 'whats-llm-raw'
-const feedname = 'whats-llm'
 
 export const handler = async (ctx: AppContext, params: QueryParams) => {
   let builder = ctx.db
     .selectFrom('post')
     .selectAll()
-    .where('feed', '=', feedname)
+    .where('feed', '=', 'whats-llm') // !!! NOT shortname
     .where('rating', '<', 4) // TODO: tweak this
     .orderBy('indexedAt', 'desc')
     .orderBy('cid', 'desc')
