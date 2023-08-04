@@ -62,7 +62,7 @@ migrations['003'] = {
         includeAuthor: null,
         excludeAuthor: 'did:plc:xxno7p4xtpkxtn4ok6prtlcb', // lovefairy.nl // cspell:disable-line
         includeText:
-          '\\bLLMs?\\b|language model|言語モデル|foundation model|transformer model|transformer architecture|self[-\\s]attention|gpt[-\\s]?4|gpt[-\\s]?3\\.5|\\banthropic\\b|hugging\\s?face|llama[-\\s]2|Stable\\s?Beluga|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\\.cpp|fastchat|gpt4all|langchain|llama[_\\s]?index|autogpt|babyagi|generative ai|生成系?\\s?AI|\\bGPT\\b|openai',
+          '\\bLLMs?\\b|language model|言語モデル|foundation model|transformer model|transformer architecture|self[-\\s]attention|gpt[-\\s]?4|gpt[-\\s]?3\\.5|\\banthropic\\b|llama[-\\s]2|Stable\\s?Beluga|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\\.cpp|fastchat|gpt4all|langchain|llama[_\\s]?index|autogpt|babyagi|generative ai|生成系?\\s?AI|\\bGPT\\b|openai',
         excludeText: 'Summary by GPT|chat\\s?gpt',
         includeLang: 'en|ja|unknown',
         excludeLang: null,
