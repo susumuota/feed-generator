@@ -11,7 +11,7 @@ export const handler = async (ctx: AppContext, params: QueryParams) => {
     .selectFrom('post')
     .selectAll()
     .where('feed', '=', shortname)
-    .where('rating', '>=', 4) // TODO: tweak this
+    .where('rating', '>=', 5) // TODO: tweak this
     .orderBy('indexedAt', 'desc')
     .orderBy('cid', 'desc')
     .limit(params.limit)
