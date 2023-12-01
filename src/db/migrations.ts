@@ -62,8 +62,9 @@ migrations['003'] = {
         includeAuthor: null,
         // did:plc:xxno7p4xtpkxtn4ok6prtlcb  lovefairy.nl // cspell:disable-line
         // did:plc:jf3oraummcsfodflx5w5pouf  arxiv-cs-cl.bsky.social // cspell:disable-line
+        // did:plc:fvxadjtvukbhdaslbiih3r2p  arxiv-cs-cv.bsky.social // cspell:disable-line
         // did:plc:mcb6n67plnrlx4lg35natk2b  nowbreezing.ntw.app // cspell:disable-line
-        excludeAuthor: 'did:plc:xxno7p4xtpkxtn4ok6prtlcb|did:plc:jf3oraummcsfodflx5w5pouf|did:plc:mcb6n67plnrlx4lg35natk2b', // cspell:disable-line
+        excludeAuthor: 'did:plc:xxno7p4xtpkxtn4ok6prtlcb|did:plc:jf3oraummcsfodflx5w5pouf|did:plc:fvxadjtvukbhdaslbiih3r2p|did:plc:mcb6n67plnrlx4lg35natk2b', // cspell:disable-line
         includeText:
           '\\bLLMs?\\b|language model|言語モデル|foundation model|transformer model|transformer architecture|self[-\\s]attention|gpt[-\\s]?4|gpt[-\\s]?3\\.5|\\banthropic\\b|llama[-\\s]2|Stable\\s?Beluga|vicuna|guanaco|wizardlm|airoboros|qlora|ggml|gptq|llama\\.cpp|fastchat|gpt4all|langchain|llama[_\\s]?index|autogpt|babyagi',
         excludeText: 'Summary by GPT|chat\\s?gpt',
