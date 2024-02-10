@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import { BskyAgent } from '@atproto/api'
-import { AtUri } from '@atproto/uri'
+import { AtUri } from '@atproto/syntax'
 import { Configuration, CreateChatCompletionRequest, OpenAIApi } from 'openai'
 import { createDb, Database } from '../src/db'
 
