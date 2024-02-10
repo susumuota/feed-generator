@@ -42,6 +42,21 @@ const updatePost = async (
     .where('uri', '=', uri)
     .execute()
 
+const getText = async (agent: BskyAgent, uri: string, cid: string) => {
+  try {
+    const u = new AtUri(uri)
+    const p = await agent.getPost({
+      repo: u.hostname,
+      rkey: u.rkey,
+      cid: cid,
+    })
+    return p?.value?.text ?? ''
+  } catch (err: any) {
+    console.error(err)
+    return ''
+  }
+}
+
 const createChatCompletionParams = (
   target: string,
   feature: string,
@@ -97,14 +112,21 @@ const run = async () => {
       posts.forEach(async (post) => {
         console.log({ post })
 
-        const u = new AtUri(post.uri)
-        const p = await agent.getPost({
-          repo: u.hostname,
-          rkey: u.rkey,
-          cid: post.cid,
-        })
-        const text = p?.value?.text ?? ''
+        const text = await getText(agent, post.uri, post.cid)
         console.log({ text })
+
+        if (!text) {
+          console.error('Error: No text found')
+          const results = await updatePost(
+            db,
+            post.uri,
+            `${feature} for ${target}`,
+            0, // 0 means no text found
+            '', // 'Error: No explanation provided',
+          )
+          console.log({ results })
+          return
+        }
 
         const params = createChatCompletionParams(target, feature, text)
         const c = await openai.createChatCompletion(params)
