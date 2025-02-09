@@ -64,12 +64,13 @@ migrations['003'] = {
         // did:plc:jf3oraummcsfodflx5w5pouf  arxiv-cs-cl.bsky.social // cspell:disable-line
         // did:plc:fvxadjtvukbhdaslbiih3r2p  arxiv-cs-cv.bsky.social // cspell:disable-line
         // did:plc:jcuneyfj7t2mtfmqna6ngmir  arxiv-cs-lg.bsky.social // cspell:disable-line
+        // did:plc:aq67jotdjmceysktj6nq6gqy  arxiv-cs-ir.bsky.social // cspell:disable-line
         // did:plc:mcb6n67plnrlx4lg35natk2b  nowbreezing.ntw.app // cspell:disable-line
         // did:plc:t5234ybehft3ynwi3xkeblom  iriamyohseagull.bsky.social // cspell:disable-line
         // did:plc:z5tl7c7dl2ltxdp2t3zmhfat  photolab.bsky.social // cspell:disable-line
-        excludeAuthor: 'did:plc:xxno7p4xtpkxtn4ok6prtlcb|did:plc:jf3oraummcsfodflx5w5pouf|did:plc:fvxadjtvukbhdaslbiih3r2p|did:plc:jcuneyfj7t2mtfmqna6ngmir|did:plc:mcb6n67plnrlx4lg35natk2b|did:plc:t5234ybehft3ynwi3xkeblom|did:plc:z5tl7c7dl2ltxdp2t3zmhfat', // cspell:disable-line
+        excludeAuthor: 'did:plc:xxno7p4xtpkxtn4ok6prtlcb|did:plc:jf3oraummcsfodflx5w5pouf|did:plc:fvxadjtvukbhdaslbiih3r2p|did:plc:jcuneyfj7t2mtfmqna6ngmir|did:plc:aq67jotdjmceysktj6nq6gqy|did:plc:mcb6n67plnrlx4lg35natk2b|did:plc:t5234ybehft3ynwi3xkeblom|did:plc:z5tl7c7dl2ltxdp2t3zmhfat', // cspell:disable-line
         includeText:
-          '\\bLLMs?\\b|language model|言語モデル|foundation model|transformer model|transformer architecture|self[-\\s]attention|gpt[-\\s]?[45]|gpt[-\\s]?3\\.5|\\banthropic\\b|llama[-\\s]2',
+          '\\bLLMs?\\b|language model|言語モデル|foundation model|transformer model|transformer architecture|self[-\\s]attention|gpt[-\\s]?[45]|gpt[-\\s]?3\\.5',
         excludeText: 'Summary by GPT|chat\\s?gpt',
         includeLang: 'en|ja|unknown',
         excludeLang: null,
