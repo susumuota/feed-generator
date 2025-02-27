@@ -53,6 +53,9 @@ migrations['002'] = {
   },
 }
 
+// convert from handle to did
+// https://bsky.social/xrpc/com.atproto.identity.resolveHandle?handle=newsycombinator.bsky.social
+
 migrations['003'] = {
   async up(db: Kysely<any>) {
     await db
@@ -60,17 +63,31 @@ migrations['003'] = {
       .values({
         feed: 'whats-llm',
         includeAuthor: null,
-        // did:plc:xxno7p4xtpkxtn4ok6prtlcb  lovefairy.nl // cspell:disable-line
-        // did:plc:jf3oraummcsfodflx5w5pouf  arxiv-cs-cl.bsky.social // cspell:disable-line
-        // did:plc:fvxadjtvukbhdaslbiih3r2p  arxiv-cs-cv.bsky.social // cspell:disable-line
-        // did:plc:jcuneyfj7t2mtfmqna6ngmir  arxiv-cs-lg.bsky.social // cspell:disable-line
-        // did:plc:aq67jotdjmceysktj6nq6gqy  arxiv-cs-ir.bsky.social // cspell:disable-line
-        // did:plc:mcb6n67plnrlx4lg35natk2b  nowbreezing.ntw.app // cspell:disable-line
-        // did:plc:t5234ybehft3ynwi3xkeblom  iriamyohseagull.bsky.social // cspell:disable-line
-        // did:plc:z5tl7c7dl2ltxdp2t3zmhfat  photolab.bsky.social // cspell:disable-line
-        excludeAuthor: 'did:plc:xxno7p4xtpkxtn4ok6prtlcb|did:plc:jf3oraummcsfodflx5w5pouf|did:plc:fvxadjtvukbhdaslbiih3r2p|did:plc:jcuneyfj7t2mtfmqna6ngmir|did:plc:aq67jotdjmceysktj6nq6gqy|did:plc:mcb6n67plnrlx4lg35natk2b|did:plc:t5234ybehft3ynwi3xkeblom|did:plc:z5tl7c7dl2ltxdp2t3zmhfat', // cspell:disable-line
-        includeText:
-          '\\bLLMs?\\b|language model|言語モデル|foundation model|transformer model|transformer architecture|self[-\\s]attention|gpt[-\\s]?[45]|gpt[-\\s]?3\\.5',
+        excludeAuthor: [
+          'did:plc:xxno7p4xtpkxtn4ok6prtlcb',  // lovefairy.nl // cspell:disable-line
+          'did:plc:hxncmsbjayftx2xncvs4xg54',  // arxiv-cs-ai.bsky.social // cspell:disable-line
+          'did:plc:jf3oraummcsfodflx5w5pouf',  // arxiv-cs-cl.bsky.social // cspell:disable-line
+          'did:plc:fvxadjtvukbhdaslbiih3r2p',  // arxiv-cs-cv.bsky.social // cspell:disable-line
+          'did:plc:jcuneyfj7t2mtfmqna6ngmir',  // arxiv-cs-lg.bsky.social // cspell:disable-line
+          'did:plc:aq67jotdjmceysktj6nq6gqy',  // arxiv-cs-ir.bsky.social // cspell:disable-line
+          'did:plc:mcb6n67plnrlx4lg35natk2b',  // nowbreezing.ntw.app // cspell:disable-line
+          'did:plc:t5234ybehft3ynwi3xkeblom',  // iriamyohseagull.bsky.social // cspell:disable-line
+          'did:plc:z5tl7c7dl2ltxdp2t3zmhfat',  // photolab.bsky.social // cspell:disable-line
+          'did:plc:df4dbsajjtvbbjn5poliesvs',  // csai-bot.bsky.social // cspell:disable-line
+          'did:plc:6kndbdnawzpis5y33gpacfop',  // cscl-bot.bsky.social // cspell:disable-line
+          'did:plc:traxg4jscmm3n3usqi76dsk2',  // cscv-bot.bsky.social // cspell:disable-line
+          'did:plc:3mbqqo3dxddhl7nwqmghsn6a',  // cslg-bot.bsky.social // cspell:disable-line
+          'did:plc:ukfr73piivinx5ljl4avafg4',  // csir-bot.bsky.social // cspell:disable-line
+        ].join('|'),
+        includeText: [
+          '\\bLLMs?\\b',
+          'language model',
+          '言語モデル',
+          'foundation model',
+          'transformer model',
+          'transformer architecture',
+          'self[-\\s]attention',
+        ].join('|'),
         excludeText: 'Summary by GPT|chat\\s?gpt',
         includeLang: 'en|ja|unknown',
         excludeLang: null,
@@ -90,22 +107,20 @@ migrations['003'] = {
       })
       .execute()
 
-    // convert from handle to did
-    // https://bsky.social/xrpc/com.atproto.identity.resolveHandle?handle=newsycombinator.bsky.social
-    // 'did:plc:7dh44snmqoa4gyzv3652gm3j', // newsycombinator.bsky.social // cspell:disable-line
-    // 'did:plc:apeaukvxm3yedgqw5zcf5pwc', // hacker-news-jp.bsky.social // cspell:disable-line
-    // 'did:plc:eidn2o5kwuaqcss7zo7ivye5', // github-trending.bsky.social // cspell:disable-line
-    // 'did:plc:ppuqidjyabv5iwzeoxt4fq5o', // github-trending-js.bsky.social // cspell:disable-line
-    // 'did:plc:tlhqo7uw5d3rcohosg3io7t5', // hatena-tech.bsky.social // cspell:disable-line
-    // 'did:plc:vtpyqvwce4x6gpa5dcizqecy', // techcrunch.bsky.social // cspell:disable-line
-    // 'did:plc:z5xxhxqv6elnjzulyf7t22wk', // paper.bsky.social // cspell:disable-line
-    // 'did:plc:pv7fudnt4dspurzdnyq73pfe', // techmeme.com // cspell:disable-line
     await db
       .insertInto('rule')
       .values({
         feed: 'tech-news',
-        includeAuthor:
-          'did:plc:7dh44snmqoa4gyzv3652gm3j|did:plc:apeaukvxm3yedgqw5zcf5pwc|did:plc:eidn2o5kwuaqcss7zo7ivye5|did:plc:ppuqidjyabv5iwzeoxt4fq5o|did:plc:tlhqo7uw5d3rcohosg3io7t5|did:plc:vtpyqvwce4x6gpa5dcizqecy|did:plc:z5xxhxqv6elnjzulyf7t22wk|did:plc:pv7fudnt4dspurzdnyq73pfe', // cspell:disable-line
+        includeAuthor: [
+          'did:plc:7dh44snmqoa4gyzv3652gm3j',  // newsycombinator.bsky.social // cspell:disable-line
+          'did:plc:apeaukvxm3yedgqw5zcf5pwc',  // hacker-news-jp.bsky.social // cspell:disable-line
+          'did:plc:eidn2o5kwuaqcss7zo7ivye5',  // github-trending.bsky.social // cspell:disable-line
+          'did:plc:ppuqidjyabv5iwzeoxt4fq5o',  // github-trending-js.bsky.social // cspell:disable-line
+          'did:plc:tlhqo7uw5d3rcohosg3io7t5',  // hatena-tech.bsky.social // cspell:disable-line
+          'did:plc:vtpyqvwce4x6gpa5dcizqecy',  // techcrunch.bsky.social // cspell:disable-line
+          'did:plc:z5xxhxqv6elnjzulyf7t22wk',  // paper.bsky.social // cspell:disable-line
+          'did:plc:pv7fudnt4dspurzdnyq73pfe',  // techmeme.com // cspell:disable-line
+        ].join('|'),
         excludeAuthor: null,
         includeText: null,
         excludeText: null,
