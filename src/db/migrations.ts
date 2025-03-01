@@ -120,6 +120,7 @@ migrations['003'] = {
           'did:plc:vtpyqvwce4x6gpa5dcizqecy',  // techcrunch.bsky.social // cspell:disable-line
           'did:plc:z5xxhxqv6elnjzulyf7t22wk',  // paper.bsky.social // cspell:disable-line
           'did:plc:pv7fudnt4dspurzdnyq73pfe',  // techmeme.com // cspell:disable-line
+          'did:plc:qwqccbclvz3v2z5r6cpnogpo',  // gigazine.net // cspell:disable-line
         ].join('|'),
         excludeAuthor: null,
         includeText: null,
