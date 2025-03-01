@@ -1,9 +1,7 @@
 #!/bin/bash
 
-script_dir=$(cd $(dirname $0); pwd)
-
 while true
 do
-  npx ts-node ${script_dir}/ratePosts.ts
+  yarn run ratePosts
   sleep 60
 done

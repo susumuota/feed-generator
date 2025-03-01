@@ -150,4 +150,12 @@ const run = async () => {
   }
 }
 
-run()
+const runPeriodically = async (iterations: number, intervalMs: number) => {
+  for (let i = 0; i < iterations; i++) {
+    await run()
+    await new Promise((resolve) => setTimeout(resolve, intervalMs))
+  }
+}
+
+// run every minute and stop after 60 iterations ~ 1 hour
+runPeriodically(60, 60 * 1000)
