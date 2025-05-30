@@ -78,6 +78,8 @@ migrations['003'] = {
           'did:plc:traxg4jscmm3n3usqi76dsk2',  // cscv-bot.bsky.social // cspell:disable-line
           'did:plc:3mbqqo3dxddhl7nwqmghsn6a',  // cslg-bot.bsky.social // cspell:disable-line
           'did:plc:ukfr73piivinx5ljl4avafg4',  // csir-bot.bsky.social // cspell:disable-line
+          'did:plc:i53e6y3liw2oaw4s6e6odw5m',  // bluesky.awakari.com // cspell:disable-line
+          'did:plc:s33lmvk7rwmlypc2qm6wn2lr',  // llms.activitypub.awakari.com.ap.brid.gy // cspell:disable-line
         ].join('|'),
         includeText: [
           '\\bLLMs?\\b',
